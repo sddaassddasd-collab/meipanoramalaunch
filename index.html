@@ -98,36 +98,36 @@
 
   <!-- 底部控制面板 -->
   <div class="controls collapsed" id="controls">
-    <button class="toggle-btn" id="toggleBtn">▲</button>
+    <button class="toggle-btn" id="toggleBtn">▲ 스타일 선택 | Choose outfit</button>
     <div>
-      <h3>頭</h3>
+      <h3>머리 | Head</h3>
       <div class="options" id="headOptions"></div>
     </div>
     <div>
-      <h3>身體</h3>
+      <h3>몸 | Body</h3>
       <div class="options" id="bodyOptions"></div>
     </div>
     <div>
-      <h3>國旗</h3>
+      <h3>국기 | Flag</h3>
       <div class="options" id="flagOptions"></div>
     </div>
   </div>
 
   <!-- 狀態/拍照/預覽 -->
-  <div id="statusBadge" class="badge" hidden>載入中…</div>
-  <button id="captureBtn" class="btn">📷 拍照</button>
+  <div id="statusBadge" class="badge" hidden>로딩 중… | Loading…</div>
+  <button id="captureBtn" class="btn">📷 촬영 | Capture</button>
 
   <div id="previewCard" class="preview" aria-live="polite">
     <div class="preview-header">
-      <div>拍照預覽</div>
-      <button id="closePreview" class="close-x" title="關閉">✕</button>
+      <div>촬영 미리보기 | Preview</div>
+      <button id="closePreview" class="close-x" title="닫기 | Close">✕</button>
     </div>
     <div class="preview-body">
-      <img id="previewImg" class="preview-img" alt="擷取預覽">
+      <img id="previewImg" class="preview-img" alt="촬영 미리보기 | Capture preview">
     </div>
     <div class="preview-actions">
-      <button id="retakeBtn" class="btn-ghost">關閉</button>
-      <a id="downloadBtn" class="btn-primary" download>下載</a>
+      <button id="retakeBtn" class="btn-ghost">닫기 | Close</button>
+      <a id="downloadBtn" class="btn-primary" download>다운로드 | Download</a>
     </div>
   </div>
 
@@ -164,7 +164,7 @@
       audio.play().catch(err => {
         console.warn('自動播放失敗，需要互動：', err);
         const btn = document.createElement('button');
-        btn.textContent = "▶ 播放音樂";
+        btn.textContent = "▶ 음악 재생 | Play music";
         btn.style.position = 'fixed';
         btn.style.top = '50%';
         btn.style.left = '50%';
@@ -257,19 +257,21 @@
 
     toggleBtn.addEventListener('click', ()=>{
       controls.classList.toggle('collapsed');
-      toggleBtn.textContent = controls.classList.contains('collapsed') ? '▲選擇造型' : '▼關閉視窗';
+      toggleBtn.textContent = controls.classList.contains('collapsed')
+        ? '▲ 스타일 선택 | Choose outfit'
+        : '▼ 창 닫기 | Close panel';
     });
 
     // ===== 合成截圖 =====
     async function captureComposite(){
       const r = viewer.getRenderer?.();
-      if (!r || !r.getCanvas) throw new Error('無法取得 renderer/canvas');
+      if (!r || !r.getCanvas) throw new Error('렌더러/캔버스를 가져올 수 없습니다 | Unable to get renderer/canvas');
       const glCanvas = r.getCanvas();
       const gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
-      if (!gl) throw new Error('沒有 WebGL context');
+      if (!gl) throw new Error('WebGL 컨텍스트가 없습니다 | No WebGL context');
 
       const W = glCanvas.width, H = glCanvas.height;
-      if (!W || !H) throw new Error('Canvas 尺寸為 0');
+      if (!W || !H) throw new Error('캔버스 크기가 0입니다 | Canvas size is 0');
 
       const oldYaw = viewer.getYaw();
       viewer.setYaw(oldYaw + 0.0001);
@@ -315,15 +317,15 @@
 
     captureBtn.addEventListener('click', async ()=>{
       try{
-        if (!ready){ setBadge('圖片載入中…', true); return; }
-        setBadge('擷取中…', true);
+        if (!ready){ setBadge('로딩 중… | Loading…', true); return; }
+        setBadge('캡처 중… | Capturing…', true);
         const blob = await captureComposite();
         showPreviewWithBlob(blob);
-        setBadge('已擷取', true);
+        setBadge('캡처 완료 | Captured', true);
         setTimeout(()=>setBadge('', false), 800);
       }catch(err){
         setBadge('', false);
-        alert('拍照失敗：' + (err && err.message ? err.message : err));
+        alert('촬영 실패 (Capture failed): ' + (err && err.message ? err.message : err));
       }
     });
 
